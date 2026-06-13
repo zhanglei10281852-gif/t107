@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class DataInitializer implements CommandLineRunner {
         if (userRepository.count() == 0) {
             createUser("admin", "admin123", "系统管理员", "信息中心", "管理员");
             createUser("wzhang", "123456", "张伟", "采购部", "采购员");
+            createUser("liulei", "123456", "刘磊", "采购部", "采购主管");
             createUser("limei", "123456", "李梅", "仓储部", "库管员");
             createUser("wangq", "123456", "王强", "生产部", "普通员工");
         }
@@ -41,9 +43,15 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (supplierRepository.count() == 0) {
-            createSupplier("SUP001", "华东钢铁有限公司", "陈经理", "021-66668888", "上海市宝山区", "原材料");
-            createSupplier("SUP002", "精密轴承制造厂", "刘主管", "0510-88889999", "江苏省无锡市", "机械备件");
-            createSupplier("SUP003", "环球电气设备公司", "周工", "020-77776666", "广东省广州市", "电气设备");
+            createApprovedSupplier("SUP001", "华东钢铁有限公司", "陈经理", "021-66668888", "上海市宝山区", "原材料",
+                    "91310000MA1FL00001", "91310000MA1FL00001", "中国工商银行上海分行营业部",
+                    "1001234567890123456", new BigDecimal("50000000.00"), "钢材生产、加工、销售；金属材料批发");
+            createApprovedSupplier("SUP002", "精密轴承制造厂", "刘主管", "0510-88889999", "江苏省无锡市", "机械备件",
+                    "91320200MA1MK22222", "91320200MA1MK22222", "中国建设银行无锡分行",
+                    "3202012345678901234", new BigDecimal("30000000.00"), "精密轴承、机械配件制造加工");
+            createApprovedSupplier("SUP003", "环球电气设备公司", "周工", "020-77776666", "广东省广州市", "电气设备",
+                    "91440100MA59U33333", "91440100MA59U33333", "招商银行广州分行天河支行",
+                    "1209012345678901234", new BigDecimal("80000000.00"), "电气设备、电机、配电柜生产销售");
         }
 
         if (materialRepository.count() == 0) {
@@ -83,6 +91,28 @@ public class DataInitializer implements CommandLineRunner {
         s.setPhone(phone);
         s.setAddress(address);
         s.setCategory(category);
+        supplierRepository.save(s);
+    }
+
+    private void createApprovedSupplier(String code, String name, String contact, String phone, String address, String category,
+                                        String licenseNo, String taxNo, String bankName, String bankAccount,
+                                        BigDecimal capital, String scope) {
+        Supplier s = new Supplier();
+        s.setSupplierCode(code);
+        s.setName(name);
+        s.setContactPerson(contact);
+        s.setPhone(phone);
+        s.setAddress(address);
+        s.setCategory(category);
+        s.setApprovalStatus("合格供应商");
+        s.setStatus("合作中");
+        s.setBusinessLicenseNo(licenseNo);
+        s.setTaxNo(taxNo);
+        s.setBankName(bankName);
+        s.setBankAccount(bankAccount);
+        s.setRegisteredCapital(capital);
+        s.setBusinessScope(scope);
+        s.setApprovedAt(LocalDateTime.now());
         supplierRepository.save(s);
     }
 
